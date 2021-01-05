@@ -32,6 +32,8 @@ def upload():
 @app.route('/monthly')
 def monthly():
     data = pd.read_sql('daily_agg_2019', engine, parse_dates=['date'])
+    if not len(data):
+        return "[]"
     #using month_year col instead of pd.grouper to keep friendly grouping labels
     data['month_year'] = pd.to_datetime(data['date']).dt.to_period('M')
     data['month_year'] = data['month_year'].dt.strftime('%Y-%m')
@@ -41,6 +43,8 @@ def monthly():
 @app.route('/mouth')
 def mouth():
     data = pd.read_sql('daily_agg_2019', engine, parse_dates=['date'])
+    if not len(data):
+        return "[]"
     data['mouth_score'] = data.apply(
         lambda row: 2*row.eat_score + 0.5*row.drink_score + row.chew_score, axis=1)
     return data.to_json(orient='records')
@@ -53,6 +57,8 @@ def jsavg():
         parse_dates=['date'],
         columns=['date', 'jump_score', 'sniff_score']
         )
+    if not len(data):
+        return "[]"
     data['month_year'] = pd.to_datetime(data['date']).dt.to_period('M')
     data['month_year'] = data['month_year'].dt.strftime('%Y-%m')
     result = data.groupby(['month_year'], as_index=False).mean()
