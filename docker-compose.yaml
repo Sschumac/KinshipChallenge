@@ -5,5 +5,18 @@ services:
   db:
     image: postgres:latest
     restart: always
+    volumes: 
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: celophane-amiacable-dolphin-yarn
+      POSTGRES_DB: challenge_db
+  webapp:
+    build: ./
+    image: webapp:latest
+    restart: on-failure:10
+    ports:
+      - 8099:8099
+    environment: 
+      - PG_PWD=eLW351QurgM9kZWDnoyTalHx6VpVAclZd
+    depends_on:
+      - db
